@@ -1,0 +1,121 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <h1>Agregar Nuevo Usuario</h1>
+    
+    {% if error %}
+        <div style="background-color: #ffe0e0; color: #d8000c; padding: 10px; margin-bottom: 20px; border: 1px solid #d8000c; border-radius: 5px;">
+            <strong>Error:</strong> {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'agregar_usuario' %}">
+        {% csrf_token %}
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- COLUMNA 1: DATOS PERSONALES -->
+            <div style="flex: 1; min-width: 300px; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                <h3 style="border-bottom: 2px solid #ccc; padding-bottom: 5px;">1. Datos Personales</h3>
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo:</label>
+                    <input type="text" id="nombre" name="nombre" value="{{ datos.nombre }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo Electrónico:</label>
+                    <input type="email" id="email" name="email" value="{{ datos.email }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="text" id="telefono" name="telefono" value="{{ datos.telefono }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="contraseña">Contraseña:</label>
+                    <input type="password" id="contraseña" name="contraseña" required style="width: 100%;">
+                </div>
+            </div>
+
+            <!-- COLUMNA 2: DIRECCIÓN -->
+            <div style="flex: 1; min-width: 300px; background: #f9f9f9; padding: 15px; border-radius: 8px;">
+                <h3 style="border-bottom: 2px solid #ccc; padding-bottom: 5px;">2. Dirección de Envío</h3>
+                <div class="form-group">
+                    <label for="calle">Calle y Número:</label>
+                    <input type="text" id="calle" name="calle" value="{{ datos.calle }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="colonia">Colonia:</label>
+                    <input type="text" id="colonia" name="colonia" value="{{ datos.colonia }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="ciudad">Ciudad:</label>
+                    <input type="text" id="ciudad" name="ciudad" value="{{ datos.ciudad }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="codigo_postal">Código Postal:</label>
+                    <input type="text" id="codigo_postal" name="codigo_postal" value="{{ datos.codigo_postal }}" required style="width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="pais">País:</label>
+                    <input type="text" id="pais" name="pais" value="{{ datos.pais }}" required style="width: 100%;">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: PAGO -->
+        <div style="margin-top: 20px; background: #e8f4fd; padding: 15px; border-radius: 8px; border: 1px solid #b6d4fe;">
+            <h3 style="border-bottom: 2px solid #9ec5fe; padding-bottom: 5px; color: #004085;">3. Método de Pago (Tarjeta)</h3>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 2;">
+                    <label for="titular">Nombre del Titular:</label>
+                    <input type="text" id="titular" name="titular" value="{{ datos.titular }}" placeholder="Como aparece en la tarjeta" required style="width: 100%;">
+                </div>
+                
+                <!-- INPUT TARJETA MODIFICADO -->
+                <div class="form-group" style="flex: 2;">
+                    <label for="numero_tarjeta">Número de Tarjeta (16 dígitos):</label>
+                    <input type="text" id="numero_tarjeta" name="numero_tarjeta" value="{{ datos.numero_tarjeta }}" maxlength="16" placeholder="XXXXXXXXXXXXXXXX" required style="width: 100%;">
+                </div>
+                
+                <!-- INPUT FECHA MODIFICADO -->
+                <div class="form-group" style="flex: 1;">
+                    <label for="fecha_vencimiento">Vencimiento (MM/YY):</label>
+                    <input type="text" id="fecha_vencimiento" name="fecha_vencimiento" value="{{ datos.fecha_vencimiento }}" maxlength="5" placeholder="MM/YY" required style="width: 100%;">
+                </div>
+                
+                <div class="form-group" style="flex: 1;">
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" value="{{ datos.cvv }}" maxlength="4" placeholder="123" required style="width: 100%;">
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: right;">
+            <a href="{% url 'ver_usuario' %}" class="btn" style="background-color: #ccc; color: var(--color-texto); text-decoration: none; padding: 10px 20px; margin-right: 10px;">Cancelar</a>
+            <button type="submit" class="btn btn-principal" style="padding: 10px 30px; font-size: 1.1em;">Guardar Usuario Completo</button>
+        </div>
+    </form>
+
+    <!-- SCRIPT PARA VALIDAR LOS CAMPOS EN TIEMPO REAL -->
+    <script>
+        // 1. Validación para Tarjeta: Solo números
+        const inputTarjeta = document.getElementById('numero_tarjeta');
+        inputTarjeta.addEventListener('input', function (e) {
+            // Reemplaza cualquier cosa que no sea número por vacío
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // 2. Validación para Fecha: Números y diagonal automática
+        const inputFecha = document.getElementById('fecha_vencimiento');
+        inputFecha.addEventListener('input', function (e) {
+            // Eliminar cualquier caracter que no sea número
+            var input = this.value.replace(/\D/g, '');
+            
+            // Si tiene más de 2 caracteres, poner la diagonal
+            if (input.length > 2) {
+                // Toma los primeros 2, agrega /, toma los siguientes 2
+                this.value = input.substring(0, 2) + '/' + input.substring(2, 4);
+            } else {
+                this.value = input;
+            }
+        });
+    </script>
+{% endblock %}

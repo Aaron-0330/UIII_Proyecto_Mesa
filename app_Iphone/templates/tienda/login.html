@@ -1,0 +1,36 @@
+{% extends 'tienda/base_tienda.html' %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+        <h2>Iniciar Sesión</h2>
+        
+        {% if error %}
+            <p style="color: red; font-weight: bold; text-align: left;">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" action="{% url 'tienda_login' %}" style="text-align: left;">
+            {% csrf_token %}
+            
+            <!-- IMPORTANTE: Este campo oculto guarda la ruta a donde ir después de entrar -->
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div style="margin-bottom: 15px;">
+                <label for="email" style="display: block; margin-bottom: 5px; font-weight: bold;">Email:</label>
+                <input type="email" id="email" name="email" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label for="password" style="display: block; margin-bottom: 5px; font-weight: bold;">Contraseña:</label>
+                <input type="password" id="password" name="password" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" required>
+            </div>
+            
+            <button type="submit" style="width: 100%; background: var(--apple-blue); color: white; padding: 12px; border: none; border-radius: 20px; font-size: 16px; cursor: pointer;">Entrar</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">
+            ¿Nuevo en la tienda? <a href="{% url 'tienda_registro' %}" style="color: var(--apple-blue); font-weight: bold;">Regístrate aquí</a>.
+        </p>
+        <p style="text-align: center; margin-top: 10px; font-size: 0.8em; color: #777;">
+            **Admin:** adminsoy@gmail.com Contraseña: eladmin
+        </p>
+    </div>
+{% endblock %}

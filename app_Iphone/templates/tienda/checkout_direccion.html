@@ -1,0 +1,115 @@
+{% extends 'tienda/base_tienda.html' %}
+
+{% block content %}
+    <style>
+        .address-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .address-container h2 {
+            color: var(--apple-blue);
+            font-size: 2em;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--apple-blue);
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            border-color: var(--apple-blue);
+            outline: none;
+        }
+        .btn-continue {
+            width: 100%;
+            padding: 12px;
+            background-color: #34c759; /* Verde para continuar/pago */
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .btn-continue:hover {
+            background-color: #2da04d;
+        }
+        .skip-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .skip-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <div class="address-container">
+        <h2>📍 Datos de Dirección</h2>
+
+        <!-- Formulario que guarda y redirige -->
+        <form method="POST" action="{% url 'tienda_guardar_direccion' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="calle">Calle y Número:</label>
+                <input type="text" id="calle" name="calle" value="{{ direccion.calle|default:'' }}" required placeholder="Ej: Av. Reforma 123">
+            </div>
+
+            <div class="form-group">
+                <label for="codigo_postal">Código Postal:</label>
+                <input type="text" id="codigo_postal" name="codigo_postal" value="{{ direccion.codigo_postal|default:'' }}" required placeholder="Ej: 06500">
+            </div>
+            
+            <div class="form-group">
+                <label for="colonia">Colonia:</label>
+                <input type="text" id="colonia" name="colonia" value="{{ direccion.colonia|default:'' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="ciudad">Ciudad:</label>
+                <input type="text" id="ciudad" name="ciudad" value="{{ direccion.ciudad|default:'' }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="pais">País:</label>
+                <input type="text" id="pais" name="pais" value="{{ direccion.pais|default:'' }}" required>
+            </div>
+            
+            <!-- ESTE BOTÓN ES EL QUE CONTINÚA AL PAGO (GUARDANDO DATOS) -->
+            <button type="submit" class="btn-continue">Guardar y Continuar al Pago ➝</button>
+        </form>
+
+        <!-- ENLACE OPCIONAL: Solo aparece si ya hay dirección y no quieres editar nada -->
+        {% if direccion %}
+            <a href="{% url 'tienda_pago' %}" class="skip-link">
+                La dirección es correcta, saltar edición e ir al Pago &raquo;
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}

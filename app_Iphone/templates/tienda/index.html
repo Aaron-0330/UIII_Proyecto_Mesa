@@ -1,0 +1,52 @@
+{% extends 'tienda/base_tienda.html' %}
+
+{% block content %}
+    <!-- Bloque Principal de Bienvenida/Hero -->
+    <section style="background: url('https://i.blogs.es/a07d0f/ipad-pro-iphone-airpods-apple/1366_2000.webp') center center / cover no-repeat; height: 500px; display: flex; align-items: center; justify-content: center; border-radius: 12px; margin-bottom: 40px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);">
+        <div style="text-align: center; color: white;">
+            <h1 style="font-size: 3.5em; margin-bottom: 10px; font-weight: 700;">Potencia Sin Límites. Diseño Excepcional.</h1>
+            <p style="font-size: 1.5em; margin-bottom: 30px;">Toda la gama de productos Apple al mejor precio, disponible para ti.</p>
+        </div>
+    </section>
+
+    <!-- Bloques de Categorías (Llamada a la Acción) -->
+    <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+        
+        <!-- Bloque Celulares -->
+        <a href="{% url 'tienda_celulares' %}" style="flex: 1 1 45%; min-width: 300px; text-decoration: none; color: var(--text-color);">
+            <div style="background-color: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); transition: transform 0.3s;">
+                <h2 style="color: var(--apple-blue); margin-top: 0;">📱 iPhone</h2>
+                <p style="color: #555;">Captura el mundo con la mejor cámara y el chip más rápido.</p>
+                <img src="https://landings.mixup.com.mx/landings/iPhone17/images/color_large.png" alt="iPhone" style="width: 80%; height: 200px; object-fit: contain; margin-top: 15px;">
+            </div>
+        </a>
+
+        <!-- Bloque Laptops -->
+        <a href="{% url 'tienda_laptops' %}" style="flex: 1 1 45%; min-width: 300px; text-decoration: none; color: var(--text-color);">
+            <div style="background-color: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); transition: transform 0.3s;">
+                <h2 style="color: var(--apple-blue); margin-top: 0;">💻 MacBook</h2>
+                <p style="color: #555;">La herramienta ideal para la productividad y la creatividad profesional.</p>
+                <img src="https://m.media-amazon.com/images/I/71jG+e7roXL._AC_SL1500_.jpg" alt="MacBook" style="width: 80%; height: 200px; object-fit: contain; margin-top: 15px;">
+            </div>
+        </a>
+
+        <!-- Bloque Airpods -->
+        <a href="{% url 'tienda_airpods' %}" style="flex: 1 1 45%; min-width: 300px; text-decoration: none; color: var(--text-color);">
+            <div style="background-color: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); transition: transform 0.3s;">
+                <h2 style="color: var(--apple-blue); margin-top: 0;">🎧 Airpods</h2>
+                <p style="color: #555;">Cancelación de ruido inigualable y audio espacial inmersivo.</p>
+                <img src="https://media.gq.com.mx/photos/66e0674e06a187700bed5c7d/16:9/w_1600,c_limit/Apple-AirPods-4-con-caja-240909.jpg" alt="Airpods" style="width: 80%; height: 200px; object-fit: contain; margin-top: 15px;">
+            </div>
+        </a>
+
+        <!-- Bloque Accesorios -->
+        <a href="{% url 'tienda_accesorios' %}" style="flex: 1 1 45%; min-width: 300px; text-decoration: none; color: var(--text-color);">
+            <div style="background-color: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); transition: transform 0.3s;">
+                <h2 style="color: var(--apple-blue); margin-top: 0;">💼 Accesorios</h2>
+                <p style="color: #555;">Personaliza y protege tus dispositivos con estilo y calidad.</p>
+                <img src="https://m.media-amazon.com/images/I/71gP+6Ts0yL._AC_SY450_.jpg" alt="Accesorios" style="width: 80%; height: 200px; object-fit: contain; margin-top: 15px;">
+            </div>
+        </a>
+
+    </div>
+{% endblock %}

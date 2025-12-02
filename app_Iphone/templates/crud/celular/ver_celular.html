@@ -1,0 +1,62 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <style>
+        /* Estilos para la miniatura de imagen en la tabla */
+        .table-image {
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; /* Asegura que la imagen se vea completa */
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+        /* Ajuste para que la descripción corta se vea mejor */
+        .description-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h1>Listado de Celulares</h1>
+    <a href="{% url 'agregar_celular' %}" class="btn btn-principal" style="margin-bottom: 20px;">+ Agregar Nuevo Celular</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Modelo</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Imagen</th> <!-- Cambiado de 'Imagen (URL)' a 'Imagen' -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for celular in celulares %}
+            <tr>
+                <td>{{ celular.id }}</td>
+                <td>{{ celular.modelo }}</td>
+                <td class="description-cell" title="{{ celular.descripcion }}">{{ celular.descripcion|truncatechars:50 }}</td>
+                <td>${{ celular.precio }}</td>
+                <td>
+                    {% if celular.imagen_url %}
+                        <img src="{{ celular.imagen_url }}" alt="{{ celular.modelo }}" class="table-image">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'actualizar_celular' celular.id %}" class="btn btn-principal">Actualizar</a>
+                    <a href="{% url 'borrar_celular' celular.id %}" class="btn btn-danger">Borrar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay celulares registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

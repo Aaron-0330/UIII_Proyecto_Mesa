@@ -1,0 +1,57 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <h1>Listado de Clientes</h1>
+    <a href="{% url 'agregar_usuario' %}" class="btn btn-principal" style="margin-bottom: 20px; display: inline-block;">+ Nuevo Cliente Completo</a>
+
+    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white;">
+        <thead>
+            <tr style="background-color: #007bff; color: white; text-align: left;">
+                <th style="padding: 10px;">ID</th>
+                <th style="padding: 10px;">Cliente</th>
+                <th style="padding: 10px;">Dirección</th>
+                <th style="padding: 10px;">Pago (Tarjeta)</th>
+                <th style="padding: 10px; text-align: center;">Pedidos</th> <!-- NUEVA COLUMNA -->
+                <th style="padding: 10px;">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td style="padding: 10px;">{{ usuario.id }}</td>
+                <td style="padding: 10px;">
+                    <strong>{{ usuario.nombre }}</strong><br>
+                    <small>{{ usuario.email }}</small><br>
+                    <small>Tel: {{ usuario.telefono }}</small>
+                </td>
+                <td style="padding: 10px;">
+                    {% if usuario.direccion %}
+                        {{ usuario.direccion.calle }}, {{ usuario.direccion.ciudad }}
+                    {% else %}
+                        <span style="color: #999;">--</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px;">
+                    {% if usuario.metodo_pago %}
+                        💳 {{ usuario.metodo_pago }}
+                    {% else %}
+                        <span style="color: #999;">--</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 10px; text-align: center; font-weight: bold; font-size: 1.2em;">
+                    <!-- Conteo automático de pedidos -->
+                    {{ usuario.pedido_set.count }}
+                </td>
+                <td style="padding: 10px;">
+                    <a href="{% url 'actualizar_usuario' usuario.id %}" class="btn btn-principal" style="padding: 5px 10px; font-size: 0.9em;">Actualizar</a>
+                    <a href="{% url 'borrar_usuario' usuario.id %}" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.9em;">Borrar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 20px;">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

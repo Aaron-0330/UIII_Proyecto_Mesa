@@ -1,0 +1,55 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <h1>Gestionar Pedido #{{ pedido.id }}</h1>
+    <p>Cliente: <strong>{{ pedido.usuario.nombre }}</strong></p>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <h3>Productos:</h3>
+    <table border="1" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+            <tr style="background-color: #eee;">
+                <th style="padding: 8px;">Producto</th>
+                <th style="padding: 8px;">Cantidad</th>
+                <th style="padding: 8px;">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles %}
+            <tr>
+                <td style="padding: 8px;">
+                    {% if detalle.celular %}{{ detalle.celular.modelo }}
+                    {% elif detalle.laptop %}{{ detalle.laptop.modelo }}
+                    {% elif detalle.tablet %}{{ detalle.tablet.modelo }}
+                    {% elif detalle.airpod %}{{ detalle.airpod.modelo }}
+                    {% elif detalle.accesorio %}{{ detalle.accesorio.tipo }}
+                    {% endif %}
+                </td>
+                <td style="padding: 8px; text-align: center;">{{ detalle.cantidad }}</td>
+                <td style="padding: 8px;">${{ detalle.precio_unitario }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2" style="text-align: right; padding: 10px;"><strong>TOTAL:</strong></td>
+                <td style="padding: 10px;"><strong>${{ pedido.total }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- FORMULARIO ESTADO -->
+    <form method="post" action="{% url 'actualizar_pedido' pedido.id %}" style="background: #e8f4fd; padding: 20px; border-radius: 8px;">
+        {% csrf_token %}
+        <label for="estado"><strong>Estado del Envío:</strong></label>
+        <select name="estado" id="estado" style="padding: 5px; margin-left: 10px;">
+            <option value="Pendiente" {% if pedido.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+            <option value="Procesando" {% if pedido.estado == 'Procesando' %}selected{% endif %}>Procesando</option>
+            <option value="Enviado" {% if pedido.estado == 'Enviado' %}selected{% endif %}>Enviado</option>
+            <option value="Entregado" {% if pedido.estado == 'Entregado' %}selected{% endif %}>Entregado</option>
+            <option value="Cancelado" {% if pedido.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+        </select>
+        
+        <br><br>
+        <button type="submit" class="btn btn-success">Guardar Cambio</button>
+        <a href="{% url 'actualizar_usuario' pedido.usuario.id %}" class="btn" style="background-color: #ccc; color: black;">Volver al Usuario</a>
+    </form>
+{% endblock %}

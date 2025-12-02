@@ -1,0 +1,41 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <h1>Borrar Usuario</h1>
+    
+    <div style="background-color: #ffe0e0; border: 1px solid #d8000c; padding: 20px; border-radius: 5px; margin-top: 20px;">
+        <h3 style="color: #d8000c; margin-top: 0;">⚠ ¿Está seguro que desea eliminar a este cliente?</h3>
+        
+        <div style="background: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+            <p style="font-size: 1.2em;"><strong>{{ usuario.nombre }}</strong> ({{ usuario.email }})</p>
+        </div>
+        
+        <p><strong>Al eliminar este usuario, también se borrará permanentemente:</strong></p>
+        <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>Sus datos de acceso.</li>
+            
+            {% if usuario.direccion %}
+                <li>Su dirección de envío: <em>{{ usuario.direccion }}</em>.</li>
+            {% endif %}
+            
+            {% if usuario.metodo_pago %}
+                <li>Su tarjeta registrada: <em>{{ usuario.metodo_pago }}</em>.</li>
+            {% endif %}
+            
+            <!-- AVISO DE PEDIDOS -->
+            {% if usuario.pedido_set.count > 0 %}
+                <li style="color: #d8000c; font-weight: bold; font-size: 1.1em;">
+                    Sus {{ usuario.pedido_set.count }} pedido(s) realizado(s).
+                </li>
+            {% else %}
+                <li>No tiene pedidos registrados.</li>
+            {% endif %}
+        </ul>
+        
+        <form method="post" action="{% url 'borrar_usuario' usuario.id %}" style="margin-top: 30px;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, Eliminar Todo</button>
+            <a href="{% url 'ver_usuario' %}" class="btn" style="background-color: #ccc; color: var(--color-texto); text-decoration: none; padding: 10px 20px;">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

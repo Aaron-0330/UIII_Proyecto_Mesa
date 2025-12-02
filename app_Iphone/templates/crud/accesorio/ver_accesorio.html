@@ -1,0 +1,62 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <style>
+        .table-image {
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+        .description-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h1>Listado de Accesorios</h1>
+    <a href="{% url 'agregar_accesorio' %}" class="btn btn-principal" style="margin-bottom: 20px;">+ Agregar Nuevo Accesorio</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Modelo Compatible</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Imagen</th> 
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for accesorio in accesorios %}
+            <tr>
+                <td>{{ accesorio.id }}</td>
+                <td>{{ accesorio.tipo }}</td>
+                <td>{{ accesorio.modelo_compatible }}</td>
+                <td class="description-cell" title="{{ accesorio.descripcion }}">{{ accesorio.descripcion|truncatechars:50 }}</td>
+                <td>${{ accesorio.precio }}</td>
+                <td>
+                    {% if accesorio.imagen_url %}
+                        <img src="{{ accesorio.imagen_url }}" alt="{{ accesorio.tipo }}" class="table-image">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'actualizar_accesorio' accesorio.id %}" class="btn btn-principal">Actualizar</a>
+                    <a href="{% url 'borrar_accesorio' accesorio.id %}" class="btn btn-danger">Borrar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No hay accesorios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

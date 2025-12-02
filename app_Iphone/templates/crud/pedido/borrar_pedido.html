@@ -1,0 +1,12 @@
+{% extends 'crud/base.html' %}
+{% block content %}
+    <h1>Borrar Pedido #{{ pedido.id }}</h1>
+    <div style="background-color: #ffe0e0; padding: 20px; border: 1px solid red;">
+        <p>¿Seguro que deseas eliminar este pedido de <strong>${{ pedido.total }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, Eliminar</button>
+            <a href="{% url 'actualizar_usuario' pedido.usuario.id %}" class="btn">Cancelar</a>
+        </form>
+    </div>
+{% endblock %}

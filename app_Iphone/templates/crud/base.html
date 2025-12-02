@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo|default:"Sistema de Administración iPhone" }}</title>
+    <style>
+        /* (Punto 17) CSS Principal: Colores suaves y modernos (Punto 28) */
+        :root {
+            --color-principal: #007aff; /* Azul Apple */
+            --color-suave: #f4f4f7; /* Gris claro */
+            --color-fondo: #ffffff;
+            --color-texto: #333;
+            --color-exito: #4caf50;
+            --color-peligro: #f44336;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            padding-top: 60px; /* Espacio para el navbar fijo */
+            background-color: var(--color-suave);
+            color: var(--color-texto);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: var(--color-fondo);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: var(--color-principal);
+            border-bottom: 2px solid var(--color-suave);
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-principal {
+            background-color: var(--color-principal);
+            color: white;
+        }
+        .btn-principal:hover {
+            background-color: #005bb5;
+        }
+        .btn-success {
+            background-color: var(--color-exito);
+            color: white;
+        }
+        .btn-danger {
+            background-color: var(--color-peligro);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--color-principal);
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* Importante para el padding */
+        }
+    </style>
+</head>
+<body>
+    {% include 'crud/header.html' %}
+    {% include 'crud/navbar.html' %}
+
+    <div class="container">
+        {% block content %}
+        <!-- Contenido dinámico aquí -->
+        {% endblock %}
+    </div>
+    {% include 'crud/footer.html' %}
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

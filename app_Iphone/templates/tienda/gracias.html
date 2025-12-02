@@ -1,0 +1,19 @@
+{% extends "tienda/base_tienda.html" %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 60px; margin-bottom: 60px;">
+    <div style="font-size: 4em; margin-bottom: 20px;">🎉</div>
+    <h1 style="color: #34c759; font-size: 2.5em; margin-bottom: 10px;">¡Gracias por tu compra!</h1>
+    
+    <p style="font-size: 1.3em; color: #333;">
+        Tu pedido <strong>#{{ pedido.id }}</strong> ha sido registrado exitosamente.
+    </p>
+    <p style="color: #666;">Pronto recibirás tus productos en la dirección indicada.</p>
+    
+    <br><br>
+    
+    <a href="{% url 'tienda_index' %}" class="btn" style="background: #0071e3; color: white; padding: 12px 30px; border-radius: 20px; text-decoration: none; font-size: 1.1em; transition: background 0.3s;">
+        Seguir Comprando
+    </a>
+</div>
+{% endblock %}

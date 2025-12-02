@@ -1,0 +1,132 @@
+{% extends "tienda/base_tienda.html" %}
+
+{% block content %}
+<style>
+    .checkout-box {
+        width: 60%;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-radius: 12px;
+    }
+    .card-display {
+        background: #f0f0f5;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #d1d1d6;
+        margin-bottom: 20px;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    .btn-next {
+        background-color: #0071e3; color: white; padding: 12px 30px;
+        border: none; border-radius: 20px; font-size: 1.1em; cursor: pointer; width: 100%;
+    }
+    .toggle-btn {
+        background: none; border: none; color: #0071e3; cursor: pointer; text-decoration: underline; margin-bottom: 15px;
+    }
+</style>
+
+<div class="checkout-box">
+    <h1 style="text-align: center; margin-bottom: 30px;">💳 Método de Pago</h1>
+    
+    <!-- CASO 1: EL USUARIO YA TIENE TARJETA REGISTRADA -->
+    {% if metodo_pago %}
+        <div id="existing-card-section">
+            <div class="card-display">
+                <h3>Tarjeta Guardada</h3>
+                <p><strong>Titular:</strong> {{ metodo_pago.titular }}</p>
+                <!-- Usamos slice para mostrar solo los ultimos 4 -->
+                <p><strong>Número:</strong> **** **** **** {{ metodo_pago.numero_tarjeta|slice:"-4:" }}</p>
+                <p><strong>Vence:</strong> {{ metodo_pago.fecha_vencimiento }}</p>
+            </div>
+            
+            <!-- Botón para usar la tarjeta existente y avanzar -->
+            <form action="{% url 'tienda_resumen_pedido' %}" method="GET">
+                <button type="submit" class="btn-next">Usar esta tarjeta</button>
+            </form>
+            
+            <br>
+            <button type="button" class="toggle-btn" onclick="toggleForm()">Cambiar o actualizar tarjeta</button>
+        </div>
+    {% endif %}
+    <!-- Linea del fallo -->
+    <div id="new-card-form" style="{% if metodo_pago %}display:none;{% endif %}">
+        <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">Ingresar Datos de Tarjeta</h3>
+        
+        <form method="POST" action="{% url 'tienda_guardar_pago' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Titular de la Tarjeta</label>
+                <input type="text" name="titular" required placeholder="Como aparece en el plástico" value="{{ metodo_pago.titular|default:'' }}">
+            </div>
+            
+            <!-- INPUT DE TARJETA -->
+            <!-- CORRECCIÓN: Agregué value para que no se borre al editar -->
+            <div class="form-group">
+                <label>Número de Tarjeta (16 dígitos)</label>
+                <input type="text" id="numero_tarjeta" name="numero_tarjeta" maxlength="16" required placeholder="0000 0000 0000 0000" value="{{ metodo_pago.numero_tarjeta|default:'' }}">
+            </div>
+            
+            <div style="display: flex; gap: 15px;">
+                <!-- INPUT DE FECHA -->
+                <!-- CORRECCIÓN: Agregué value -->
+                <div class="form-group" style="flex:1;">
+                    <label>Vencimiento (MM/YY)</label>
+                    <input type="text" id="fecha_vencimiento" name="fecha_vencimiento" maxlength="5" required placeholder="MM/YY" value="{{ metodo_pago.fecha_vencimiento|default:'' }}">
+                </div>
+                <!-- INPUT DE CVV -->
+                <!-- CORRECCIÓN: Agregué value -->
+                <div class="form-group" style="flex:1;">
+                    <label>CVV</label>
+                    <input type="text" name="cvv" maxlength="4" required placeholder="123" value="{{ metodo_pago.cvv|default:'' }}">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-next">Guardar y Continuar</button>
+        </form>
+        
+        {% if metodo_pago %}
+            <button type="button" class="toggle-btn" onclick="toggleForm()" style="margin-top: 10px;">Cancelar cambio</button>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Alternar entre ver tarjeta guardada y formulario
+    function toggleForm() {
+        var existing = document.getElementById('existing-card-section');
+        var form = document.getElementById('new-card-form');
+        if (existing.style.display === 'none') {
+            existing.style.display = 'block';
+            form.style.display = 'none';
+        } else {
+            existing.style.display = 'none';
+            form.style.display = 'block';
+        }
+    }
+
+    // Validación de Tarjeta (Solo números)
+    var inputTarjeta = document.getElementById('numero_tarjeta');
+    if (inputTarjeta) {
+        inputTarjeta.addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+
+    // Validación de Fecha (MM/YY automático)
+    var inputFecha = document.getElementById('fecha_vencimiento');
+    if (inputFecha) {
+        inputFecha.addEventListener('input', function (e) {
+            var input = this.value.replace(/\D/g, '');
+            if (input.length > 2) {
+                this.value = input.substring(0, 2) + '/' + input.substring(2, 4);
+            } else {
+                this.value = input;
+            }
+        });
+    }
+</script>
+{% endblock %}

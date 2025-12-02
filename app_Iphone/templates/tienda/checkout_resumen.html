@@ -1,0 +1,101 @@
+{% extends "tienda/base_tienda.html" %}
+
+{% block content %}
+<style>
+    .summary-container {
+        display: flex;
+        gap: 30px;
+        width: 90%;
+        margin: 40px auto;
+        flex-wrap: wrap;
+    }
+    .details-col { flex: 2; min-width: 300px; }
+    .total-col { 
+        flex: 1; 
+        min-width: 280px;
+        background: #fbfbfd; 
+        padding: 25px; 
+        border-radius: 12px; 
+        height: fit-content;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .section-box {
+        background: white;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .section-title { font-size: 1.2em; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    .item-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; align-items: center; }
+    .btn-confirm {
+        background-color: #34c759; color: white; width: 100%;
+        padding: 15px; border: none; border-radius: 10px;
+        font-size: 1.2em; cursor: pointer; margin-top: 20px;
+    }
+    .edit-link { float: right; font-size: 0.8em; color: #0071e3; text-decoration: none; }
+</style>
+
+<h1 style="text-align: center; margin-top: 30px;">Resumen del Pedido</h1>
+
+<div class="summary-container">
+    <!-- COLUMNA IZQUIERDA: DETALLES -->
+    <div class="details-col">
+        
+        <!-- DIRECCIÓN -->
+        <div class="section-box">
+            <div class="section-title">
+                📍 Dirección de Envío
+                <a href="{% url 'tienda_mostrar_direccion' %}" class="edit-link">Editar</a>
+            </div>
+            <p><strong>Calle:</strong> {{ direccion.calle }}</p>
+            <p><strong>Zona:</strong> {{ direccion.colonia }}, CP: {{ direccion.codigo_postal }}</p>
+            <p><strong>Ubicación:</strong> {{ direccion.ciudad }}, {{ direccion.pais }}</p>
+        </div>
+
+        <!-- PAGO -->
+        <div class="section-box">
+            <div class="section-title">
+                💳 Método de Pago
+                <a href="{% url 'tienda_pago' %}" class="edit-link">Editar</a>
+            </div>
+            <p><strong>Titular:</strong> {{ metodo_pago.titular }}</p>
+            <p><strong>Tarjeta:</strong> **** **** **** {{ metodo_pago.numero_tarjeta|slice:"-4:" }}</p>
+            <p><strong>Vencimiento:</strong> {{ metodo_pago.fecha_vencimiento }}</p>
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div class="section-box">
+            <div class="section-title">📦 Productos ({{ cart_item_count }})</div>
+            {% for item in cart_items %}
+                <div class="item-row">
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <img src="{{ item.imagen_url }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                        <div>
+                            <strong>{{ item.nombre }}</strong>
+                            {% if item.generacion %}<small style="color:#666;">({{ item.generacion }})</small>{% endif %}
+                            <br><small>Cantidad: {{ item.cantidad }}</small>
+                        </div>
+                    </div>
+                    <div style="font-weight: bold;">${{ item.subtotal|floatformat:2 }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: TOTAL Y CONFIRMACIÓN -->
+    <div class="total-col">
+        <h2>Total a Pagar</h2>
+        <div style="display: flex; justify-content: space-between; font-size: 1.5em; font-weight: bold; margin: 20px 0;">
+            <span>Total:</span>
+            <span>${{ total_general|floatformat:2 }}</span>
+        </div>
+        <p style="font-size: 0.9em; color: #666; margin-bottom: 20px;">Al confirmar, se procesará el pedido y se limpiará tu carrito.</p>
+        
+        <form method="POST" action="{% url 'tienda_finalizar_compra' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-confirm">✅ Confirmar Compra</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

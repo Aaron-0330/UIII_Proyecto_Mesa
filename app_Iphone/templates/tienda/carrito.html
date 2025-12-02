@@ -1,0 +1,152 @@
+{% extends "tienda/base_tienda.html" %}
+
+{% block content %}
+    <style>
+        .cart-table {
+            width: 80%;
+            margin: 40px auto;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .cart-table th, .cart-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        .cart-table th {
+            background-color: var(--apple-gray);
+            font-weight: 600;
+        }
+        .cart-item-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .qty-input {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .total-row {
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #f7f7f7;
+        }
+        .btn-remove, .btn-update {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--apple-blue);
+            font-size: 1.2em;
+            padding: 0;
+            margin: 0 5px;
+        }
+        .btn-remove { color: #ff3b30; } /* Rojo Apple para eliminar */
+        .empty-cart-message {
+            margin-top: 50px;
+            font-size: 1.5em;
+            color: #555;
+        }
+        .checkout-container {
+            width: 80%;
+            margin: 20px auto;
+            text-align: right;
+        }
+        .btn-checkout {
+            background-color: #34c759; /* Verde Apple */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .btn-checkout:hover {
+            background-color: #30a04e;
+        }
+    </style>
+
+    <h1 style="text-align: center; margin-top: 30px;">Mi Carrito de Compras</h1>
+
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                    <tr>
+                        <td>
+                            <img src="{{ item.imagen_url }}" alt="Imagen de {{ item.nombre }}" class="cart-item-img">
+                            <span style="margin-left: 10px;">
+                                {{ item.nombre }} 
+                                {% if item.generacion %}({{ item.generacion }}){% endif %}
+                            </span>
+                        </td>
+                        <td>{{ item.type|capfirst }}</td>
+                        <td>${{ item.precio_unitario|floatformat:2 }}</td>
+                        <td>
+                            <!-- Formulario para actualizar cantidad -->
+                            <form method="POST" action="{% url 'tienda_actualizar_item_carrito' item_key=item.key %}" style="display:inline-flex; align-items:center;">
+                                {% csrf_token %}
+                                <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" class="qty-input">
+                                <button type="submit" class="btn-update" title="Actualizar cantidad">🔄</button>
+                            </form>
+                        </td>
+                        <td>${{ item.subtotal|floatformat:2 }}</td>
+                        <td>
+                            <!-- Formulario para eliminar -->
+                            <form method="POST" action="{% url 'tienda_eliminar_del_carrito' item_key=item.key %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-remove" title="Eliminar del carrito">❌</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td colspan="4" style="text-align: right;">Total General:</td>
+                    <td colspan="2">${{ total_general|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="checkout-container">
+            <!-- LÓGICA DE BOTÓN DE PAGO -->
+            {% if request.session.usuario_id %}
+                <!-- Si ya inició sesión, va directo a Dirección -->
+                <a href="{% url 'tienda_mostrar_direccion' %}" class="btn-checkout">
+                    Proceder al Pago ➝
+                </a>
+            {% else %}
+                <!-- Si NO ha iniciado sesión, va al Login pero con ?next= para volver aquí -->
+                <a href="{% url 'tienda_login' %}?next={% url 'tienda_mostrar_direccion' %}" class="btn-checkout" style="background-color: var(--apple-blue);">
+                    Iniciar Sesión para Pagar ➝
+                </a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div style="text-align: center;">
+            <p class="empty-cart-message">Tu carrito de compras está vacío.</p>
+            <p style="color: #777;">¡Explora nuestros productos Apple y empieza a comprar!</p>
+            <div style="margin-top: 20px;">
+                 <a href="{% url 'tienda_index' %}" class="btn-checkout" style="background-color: var(--apple-blue);">Volver a la Tienda</a>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock content %}

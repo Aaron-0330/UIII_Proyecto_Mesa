@@ -1,0 +1,60 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <style>
+        .table-image {
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+        .description-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h1>Listado de Laptops (MacBook)</h1>
+    <a href="{% url 'agregar_laptop' %}" class="btn btn-principal" style="margin-bottom: 20px;">+ Agregar Nueva Laptop</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Modelo</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Imagen</th> 
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for laptop in laptops %}
+            <tr>
+                <td>{{ laptop.id }}</td>
+                <td>{{ laptop.modelo }}</td>
+                <td class="description-cell" title="{{ laptop.descripcion }}">{{ laptop.descripcion|truncatechars:50 }}</td>
+                <td>${{ laptop.precio }}</td>
+                <td>
+                    {% if laptop.imagen_url %}
+                        <img src="{{ laptop.imagen_url }}" alt="{{ laptop.modelo }}" class="table-image">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'actualizar_laptop' laptop.id %}" class="btn btn-principal">Actualizar</a>
+                    <a href="{% url 'borrar_laptop' laptop.id %}" class="btn btn-danger">Borrar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay laptops registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

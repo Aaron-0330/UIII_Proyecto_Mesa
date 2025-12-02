@@ -1,0 +1,60 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <style>
+        .table-image {
+            width: 50px; 
+            height: 50px; 
+            object-fit: contain; 
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+        .description-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h1>Listado de iPad</h1>
+    <a href="{% url 'agregar_tablet' %}" class="btn btn-principal" style="margin-bottom: 20px;">+ Agregar Nueva Tablet</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Modelo</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Imagen</th> 
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tablet in tablets %}
+            <tr>
+                <td>{{ tablet.id }}</td>
+                <td>{{ tablet.modelo }}</td>
+                <td class="description-cell" title="{{ tablet.descripcion }}">{{ tablet.descripcion|truncatechars:50 }}</td>
+                <td>${{ tablet.precio }}</td>
+                <td>
+                    {% if tablet.imagen_url %}
+                        <img src="{{ tablet.imagen_url }}" alt="{{ tablet.modelo }}" class="table-image">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'actualizar_tablet' tablet.id %}" class="btn btn-principal">Actualizar</a>
+                    <a href="{% url 'borrar_tablet' tablet.id %}" class="btn btn-danger">Borrar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No hay tablets registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

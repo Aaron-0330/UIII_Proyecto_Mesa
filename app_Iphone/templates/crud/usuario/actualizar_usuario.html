@@ -1,0 +1,137 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+    <h1>Expediente del Usuario: {{ usuario.nombre }}</h1>
+
+    {% if error %}
+        <div style="background-color: #ffe0e0; color: #d8000c; padding: 10px; margin-bottom: 20px; border: 1px solid #d8000c; border-radius: 5px;">
+            <strong>Error:</strong> {{ error }}
+        </div>
+    {% endif %}
+    
+    <form method="post" action="{% url 'realizar_actualizacion_usuario' usuario.id %}">
+        {% csrf_token %}
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- DATOS GENERALES -->
+            <div style="flex: 1; background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                <h3>✏️ Editar Datos Personales</h3>
+                <label>Nombre:</label> <input type="text" name="nombre" value="{{ usuario.nombre }}" required style="width: 95%; margin-bottom: 10px;">
+                <label>Email:</label> <input type="email" name="email" value="{{ usuario.email }}" required style="width: 95%; margin-bottom: 10px;">
+                <label>Teléfono:</label> <input type="text" name="telefono" value="{{ usuario.telefono }}" required style="width: 95%; margin-bottom: 10px;">
+                <label>Contraseña:</label> <input type="password" name="contraseña" placeholder="(Dejar vacío para mantener)" style="width: 95%;">
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div style="flex: 1; background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+                <h3>📍 Dirección de Envío</h3>
+                {% if direccion %}
+                    <label>Calle:</label><input type="text" name="calle" value="{{ direccion.calle }}" required style="width: 95%; margin-bottom: 5px;">
+                    <label>Colonia:</label><input type="text" name="colonia" value="{{ direccion.colonia }}" required style="width: 95%; margin-bottom: 5px;">
+                    <label>Ciudad:</label><input type="text" name="ciudad" value="{{ direccion.ciudad }}" required style="width: 95%; margin-bottom: 5px;">
+                    <div style="display: flex; gap: 10px;">
+                        <div><label>CP:</label><input type="text" name="codigo_postal" value="{{ direccion.codigo_postal }}" required style="width: 100%;"></div>
+                        <div><label>País:</label><input type="text" name="pais" value="{{ direccion.pais }}" required style="width: 100%;"></div>
+                    </div>
+                {% else %}
+                    <p style="color: blue;">Crear Dirección:</p>
+                    <input type="text" name="calle" placeholder="Calle" required style="width: 95%; margin-bottom: 5px;">
+                    <input type="text" name="colonia" placeholder="Colonia" required style="width: 95%; margin-bottom: 5px;">
+                    <input type="text" name="ciudad" placeholder="Ciudad" required style="width: 95%; margin-bottom: 5px;">
+                    <input type="text" name="codigo_postal" placeholder="CP" required style="width: 45%;">
+                    <input type="text" name="pais" placeholder="País" required style="width: 45%;">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- PAGO -->
+        <div style="margin-top: 20px; background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 5px;">
+            <h3>💳 Método de Pago</h3>
+            {% if metodo_pago %}
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 2;"><label>Titular:</label><input type="text" name="titular" value="{{ metodo_pago.titular }}" required style="width: 100%;"></div>
+                    <!-- Inputs con IDs para JS -->
+                    <div style="flex: 2;"><label>Tarjeta (16 dígitos):</label><input type="text" id="numero_tarjeta" name="numero_tarjeta" value="{{ metodo_pago.numero_tarjeta }}" maxlength="16" required style="width: 100%;"></div>
+                    <div style="flex: 1;"><label>Vence (MM/YY):</label><input type="text" id="fecha_vencimiento" name="fecha_vencimiento" value="{{ metodo_pago.fecha_vencimiento }}" maxlength="5" required style="width: 100%;"></div>
+                    <div style="flex: 1;"><label>CVV:</label><input type="text" name="cvv" value="{{ metodo_pago.cvv }}" maxlength="4" required style="width: 100%;"></div>
+                </div>
+            {% else %}
+                <p style="color: blue;">Agregar Tarjeta:</p>
+                <div style="display: flex; gap: 15px;">
+                    <input type="text" name="titular" placeholder="Titular" required style="flex:2;">
+                    <!-- Inputs con IDs para JS -->
+                    <input type="text" id="numero_tarjeta" name="numero_tarjeta" placeholder="16 Dígitos" maxlength="16" required style="flex:2;">
+                    <input type="text" id="fecha_vencimiento" name="fecha_vencimiento" placeholder="MM/YY" maxlength="5" required style="flex:1;">
+                    <input type="text" name="cvv" placeholder="CVV" maxlength="4" required style="flex:1;">
+                </div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-success" style="margin-top: 15px; width: 100%;">Guardar Todos los Cambios del Usuario</button>
+    </form>
+
+    <hr style="border-top: 3px solid #333; margin: 40px 0;">
+
+    <!-- TABLA DE PEDIDOS DENTRO DEL USUARIO -->
+    <h2>📦 Historial de Pedidos de {{ usuario.nombre }}</h2>
+    
+    <table border="1" style="width: 100%; border-collapse: collapse; background: white;">
+        <thead>
+            <tr style="background: #333; color: white;">
+                <th style="padding: 10px;">ID Pedido</th>
+                <th style="padding: 10px;">Fecha</th>
+                <th style="padding: 10px;">Estado</th>
+                <th style="padding: 10px;">Total</th>
+                <th style="padding: 10px;">Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in usuario.pedido_set.all %}
+            <tr>
+                <td style="padding: 10px; text-align: center;"><strong>#{{ pedido.id }}</strong></td>
+                <td style="padding: 10px;">{{ pedido.fecha_pedido|date:"d/m/Y" }}</td>
+                <td style="padding: 10px; text-align: center;">
+                    {% if pedido.estado == 'Pendiente' %}<span style="background:orange; color:white; padding:3px 8px; border-radius:4px;">{{ pedido.estado }}</span>
+                    {% elif pedido.estado == 'Enviado' %}<span style="background:blue; color:white; padding:3px 8px; border-radius:4px;">{{ pedido.estado }}</span>
+                    {% elif pedido.estado == 'Entregado' %}<span style="background:green; color:white; padding:3px 8px; border-radius:4px;">{{ pedido.estado }}</span>
+                    {% else %}{{ pedido.estado }}{% endif %}
+                </td>
+                <td style="padding: 10px;">${{ pedido.total }}</td>
+                <td style="padding: 10px; text-align: center;">
+                    <a href="{% url 'actualizar_pedido' pedido.id %}" class="btn btn-principal" style="font-size: 0.8em;">Ver / Editar Estado</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="padding: 20px; text-align: center; color: #777;">Este usuario aún no ha realizado ningún pedido.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'ver_usuario' %}" class="btn" style="background-color: #ccc; color: var(--color-texto); text-decoration: none; padding: 10px 20px;">Regresar a Lista de Usuarios</a>
+    </div>
+
+    <!-- SCRIPT PARA VALIDAR LOS CAMPOS DE TARJETA Y FECHA -->
+    <script>
+        const inputTarjeta = document.getElementById('numero_tarjeta');
+        if(inputTarjeta){
+            inputTarjeta.addEventListener('input', function (e) {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
+
+        const inputFecha = document.getElementById('fecha_vencimiento');
+        if(inputFecha){
+            inputFecha.addEventListener('input', function (e) {
+                var input = this.value.replace(/\D/g, '');
+                if (input.length > 2) {
+                    this.value = input.substring(0, 2) + '/' + input.substring(2, 4);
+                } else {
+                    this.value = input;
+                }
+            });
+        }
+    </script>
+{% endblock %}

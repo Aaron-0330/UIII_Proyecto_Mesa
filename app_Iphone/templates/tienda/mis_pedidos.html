@@ -1,0 +1,115 @@
+{% extends "tienda/base_tienda.html" %}
+
+{% block content %}
+<style>
+    .orders-container {
+        width: 80%;
+        margin: 40px auto;
+        text-align: left;
+    }
+    .order-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    .order-header {
+        background-color: #f5f5f7;
+        padding: 15px 20px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .order-info span {
+        margin-right: 20px;
+        color: #555;
+        font-size: 0.9em;
+    }
+    .order-body {
+        padding: 20px;
+    }
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8em;
+        font-weight: bold;
+        color: white;
+    }
+    .status-pendiente { background-color: orange; }
+    .status-enviado { background-color: #007aff; }
+    .status-entregado { background-color: #34c759; }
+    .status-cancelado { background-color: #ff3b30; }
+    
+    .product-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .product-item:last-child { border-bottom: none; }
+</style>
+
+<div class="orders-container">
+    <h1 style="text-align: center; margin-bottom: 40px;">Historial de Pedidos</h1>
+    
+    {% if pedidos %}
+        {% for pedido in pedidos %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-info">
+                        <strong>PEDIDO #{{ pedido.id }}</strong>
+                        <span>📅 {{ pedido.fecha_pedido|date:"d M Y" }}</span>
+                        <span>Total: <strong>${{ pedido.total }}</strong></span>
+                    </div>
+                    <div>
+                        <!-- Lógica simple de colores para el estado -->
+                        <span class="status-badge 
+                            {% if pedido.estado == 'Pendiente' %}status-pendiente
+                            {% elif pedido.estado == 'Enviado' %}status-enviado
+                            {% elif pedido.estado == 'Entregado' %}status-entregado
+                            {% else %}status-cancelado{% endif %}">
+                            {{ pedido.estado }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="order-body">
+                    <p><strong>Enviado a:</strong> {{ pedido.direccion_envio.calle }}, {{ pedido.direccion_envio.colonia }}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
+                    
+                    <strong>Productos:</strong>
+                    <ul class="product-list">
+                        {% for detalle in pedido.detallepedido_set.all %}
+                        <li class="product-item">
+                            <span>
+                                {% if detalle.celular %}{{ detalle.celular.modelo }}
+                                {% elif detalle.laptop %}{{ detalle.laptop.modelo }}
+                                {% elif detalle.tablet %}{{ detalle.tablet.modelo }}
+                                {% elif detalle.airpod %}{{ detalle.airpod.modelo }}
+                                {% elif detalle.accesorio %}{{ detalle.accesorio.tipo }}
+                                {% endif %}
+                                <small style="color: #777;">(x{{ detalle.cantidad }})</small>
+                            </span>
+                            <span>${{ detalle.precio_unitario }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 50px;">
+            <h3>Aún no has realizado ninguna compra.</h3>
+            <a href="{% url 'tienda_index' %}" class="btn" style="background: #007aff; color: white; padding: 10px 20px; border-radius: 20px; text-decoration: none;">Ir a comprar</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
